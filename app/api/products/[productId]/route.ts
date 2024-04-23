@@ -11,16 +11,22 @@ export const GET = async (
 ) => {
   try {
     await connectToDB();
+    console.log("called this function: ", params)
 
     const product = await Product.findById(params.productId).populate({
       path: "collections",
       model: Collection,
     });
+    console.log("product: ", product)
 
     if (!product) {
       return new NextResponse(
         JSON.stringify({ message: "Product not found" }),
-        { status: 404 }
+        { status: 404,headers: {
+          "Access-Control-Allow-Origin": `${process.env.ECOMMERCE_STORE_URL}`,
+          "Access-Control-Allow-Methods": "GET",
+          "Access-Control-Allow-Headers": "Content-Type",
+        }, }
       );
     }
     return new NextResponse(JSON.stringify(product), {
